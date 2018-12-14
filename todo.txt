@@ -1,0 +1,4 @@
+1. Tooltip in CandidatesTable (Gelernt + Einsetzbar) so dass man mehr als es in der Spalte sieht 
+2. Spalte in CandidatesTable erstellt
+3. Filter mit Record-Owner (Eigene/Alle)
+ 
