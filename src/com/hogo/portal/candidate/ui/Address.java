@@ -40,7 +40,7 @@ public class Address extends Composite  {
 		Label lblStrasse = new Label(this, SWT.NONE);
 		lblStrasse.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 		toolkit.adapt(lblStrasse, true, true);
-		lblStrasse.setText("Strasse:");
+		lblStrasse.setText("Strasse :");
 		
 		txtStrasse = new Text(this, SWT.BORDER);
 		txtStrasse.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
@@ -50,7 +50,7 @@ public class Address extends Composite  {
 		Label lblStadt = new Label(this, SWT.NONE);
 		lblStadt.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 		toolkit.adapt(lblStadt, true, true);
-		lblStadt.setText("Stadt:");
+		lblStadt.setText("Stadt :");
 		
 		txtStadt = new Text(this, SWT.BORDER);
 		txtStadt.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
@@ -59,7 +59,7 @@ public class Address extends Composite  {
 		Label lblPlz = new Label(this, SWT.NONE);
 		lblPlz.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 		toolkit.adapt(lblPlz, true, true);
-		lblPlz.setText("PLZ:");
+		lblPlz.setText("PLZ :");
 		
 		txtPLZ = new Text(this, SWT.BORDER);
 		txtPLZ.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1));
@@ -68,7 +68,7 @@ public class Address extends Composite  {
 		Label lblCountry = new Label(this, SWT.NONE);
 		lblCountry.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
 		toolkit.adapt(lblCountry, true, true);
-		lblCountry.setText("Land:");
+		lblCountry.setText("Land :");
 		txtCountry = new Text(this, SWT.BORDER);
 		txtCountry.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 		toolkit.adapt(txtCountry, true, true);

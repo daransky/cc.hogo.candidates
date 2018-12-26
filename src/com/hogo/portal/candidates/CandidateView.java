@@ -8,15 +8,22 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.TreeViewerColumn;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.MenuAdapter;
+import org.eclipse.swt.events.MenuEvent;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.TreeItem;
 
 import com.hogo.portal.Activator;
 import com.hogo.portal.OpenCandidateEditor;
 import com.hogo.portal.candidate.ui.AbstractView;
+import com.hogo.portal.candidate.ui.Refreshable;
 
-public class CandidateView extends AbstractView {
-
+public class CandidateView extends AbstractView implements Refreshable {
 	public static final String ID = "com.hogo.portal.candidates.CandidateView";
 	private CandidateModel model;
 	private PersonContentProvider content;
@@ -39,15 +46,67 @@ public class CandidateView extends AbstractView {
 			OpenCandidateEditor open = new OpenCandidateEditor(
 					Activator.getDefault().getWorkbench().getActiveWorkbenchWindow());
 			for (TreeItem i : items) {
-				open.run((CandidateEntry) i.getData());
+				open.run((CandidateEntry) i.getData(), this);
 			}
 		}
+	}
+
+	void createContextMenu() {
+		Menu contextMenu = new Menu(getViewer().getTree());
+		contextMenu.addMenuListener(new MenuAdapter() {
+			public void menuShown(MenuEvent e) {
+				MenuItem[] items = contextMenu.getItems();
+				for (int i = 0; i < items.length; i++) {
+					items[i].dispose();
+				}
+
+				final TreeItem item = getItemSelected();
+				final CandidateEntry candidate = (CandidateEntry) item.getData();
+
+				for (Status sts : Status.values()) {
+					MenuItem newItem = new MenuItem(contextMenu, SWT.CHECK);
+					newItem.setText(sts.toString());
+					newItem.setData(sts);
+					newItem.setSelection(sts == candidate.getStatus());
+					newItem.addSelectionListener(new SelectionListener() {
+
+						@Override
+						public void widgetSelected(SelectionEvent e) {
+							final CandidateEntry candidate = (CandidateEntry) getItemSelected().getData();
+							final MenuItem mi = (MenuItem) e.getSource();
+							
+							candidate.setStatus((Status) mi.getData());
+							try {
+								model.updateStatus(candidate);
+								refreshAction();
+							} catch (SQLException e1) {
+								UIError.showError("DB Fehler", e1);
+							}
+						}
+
+						@Override
+						public void widgetDefaultSelected(SelectionEvent e) {
+						}
+					});
+				}
+			}
+		});
+
+		setContextMenu(contextMenu);
+	}
+
+	TreeItem getItemSelected() {
+		TreeItem[] selection = getViewer().getTree().getSelection();
+		return selection[0];
 	}
 
 	@Override
 	public void createPartControl(Composite parent) {
 		super.createPartControl(parent);
 		getViewer().setLabelProvider(new CandidateTableLabelProvider());
+
+		createContextMenu();
+
 		try {
 			model = CandidateModel.open();
 			refreshAction();
@@ -58,13 +117,15 @@ public class CandidateView extends AbstractView {
 
 	@Override
 	protected void refreshAction() {
-		getViewer().getTree().removeAll();
-		try {
-			Collection<CandidateEntry> result = model.select();
-			getViewer().setInput(result);
-		} catch (SQLException e) {
-			UIError.showError("DB Fehler", e);
-		}
+		getSite().getShell().getDisplay().asyncExec(() -> {
+			getViewer().getTree().removeAll();
+			try {
+				Collection<CandidateEntry> result = model.select();
+				getViewer().setInput(result);
+			} catch (SQLException e) {
+				UIError.showError("DB Fehler", e);
+			}
+		});
 	}
 
 	protected void deleteAction() {
@@ -98,6 +159,11 @@ public class CandidateView extends AbstractView {
 	@Override
 	protected boolean isAddAllowed() {
 		return false;
+	}
+
+	@Override
+	public void refresh() {
+		refreshAction();
 	}
 
 }

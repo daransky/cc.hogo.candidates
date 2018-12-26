@@ -6,6 +6,7 @@ public class Countries {
 
 	
 	static final Country[] COUNTRIES = new Country[] { 
+			 new Country("Österreich","43","AT / AUT"),
 			 new Country("Afghanistan","93","AF / AFG"),
 			 new Country("Albania","355","AL / ALB"),
 			 new Country("Algeria","213","DZ / DZA"),

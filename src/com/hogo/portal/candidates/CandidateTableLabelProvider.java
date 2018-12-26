@@ -79,7 +79,8 @@ public class CandidateTableLabelProvider extends AbstractTableLabelProvider impl
 
 	@Override
 	public Color getBackground(Object element, int columnIndex) {
-		return null;
+		CandidateEntry e = (CandidateEntry) element;
+		return e.getStatus().getColor(); 
 	}
 
 	@Override
@@ -108,7 +109,7 @@ public class CandidateTableLabelProvider extends AbstractTableLabelProvider impl
 
 		col[2] = new TreeViewerColumn(viewer, SWT.NONE);
 		col[2].getColumn().setText("Deutsch");
-		col[2].getColumn().setWidth(120);
+		col[2].getColumn().setWidth(140);
 
 		col[3] = new TreeViewerColumn(viewer, SWT.NONE);
 		col[3].getColumn().setText("Verfügbar");

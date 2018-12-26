@@ -65,9 +65,23 @@ public class CandidateEditor extends EditorPart {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				binder.getBean().deutsch = LanguageKnowledge.values()[basicInfo.getCmbDeutsch().getSelectionIndex()];
-				binder.setChanged(true);
+				binder.onChange(this);
 			}
 
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+				widgetSelected(e);
+			}
+		});
+
+		basicInfo.getCmbStatus().select(binder.getBean().status.ordinal());
+		basicInfo.getCmbStatus().addSelectionListener(new SelectionListener() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				binder.getBean().status = Status.values()[basicInfo.getCmbStatus().getSelectionIndex()];
+				binder.onChange(this);
+			}
+			
 			@Override
 			public void widgetDefaultSelected(SelectionEvent e) {
 				widgetSelected(e);
@@ -111,12 +125,12 @@ public class CandidateEditor extends EditorPart {
 
 		knowledge.getKnowledgeTable().addModifyListener(value -> {
 			binder.getBean().setGelernt(value);
-			binder.setChanged(true);
+			binder.onChange(this);
 		});
 
 		knowledge.getUsageTable().addModifyListener(value -> {
 			binder.getBean().setEinsetzbar(value);
-			binder.setChanged(true);
+			binder.onChange(this);
 		});
 	}
 
@@ -149,7 +163,6 @@ public class CandidateEditor extends EditorPart {
 
 		ScrolledForm form = formToolkit.createScrolledForm(container);
 		formToolkit.paintBordersFor(form);
-//		form.setText("Neuer Kandidat");
 		form.getBody().setLayout(new GridLayout(1, false));
 
 		createBasicDataControl(form.getBody());
@@ -170,6 +183,11 @@ public class CandidateEditor extends EditorPart {
 				model.add(binder.getBean());
 			else
 				model.update(binder.getBean());
+			
+			CandidateEditorInput input = (CandidateEditorInput)getEditorInput();
+			if( input != null && input.getParent() != null )
+				input.getParent().refresh();
+			
 			binder.setChanged(false);
 			isNew = false;
 			firePropertyChange(PROP_DIRTY);

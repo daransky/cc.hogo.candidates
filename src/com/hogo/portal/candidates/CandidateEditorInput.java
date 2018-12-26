@@ -5,19 +5,21 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IPersistableElement;
 
 import com.hogo.portal.Activator;
+import com.hogo.portal.candidate.ui.Refreshable;
 
 public class CandidateEditorInput implements IEditorInput {
-
 	private CandidateEntry	entry = null;
+	private Refreshable 	parent = null;
 	
-	public CandidateEditorInput(CandidateEntry e) {
-		entry = e;
+	public CandidateEditorInput(CandidateEntry e, Refreshable parent) {
+		this.entry = e;
+		this.parent = parent;
 	}
 	
 	@SuppressWarnings("unchecked")
 	@Override
 	public <T> T getAdapter(Class<T> adapter) {
-		return (T)entry;
+		return ( CandidateEntry.class.isAssignableFrom(adapter) )  ? (T)entry : null;
 	}
 
 	@Override
@@ -45,4 +47,7 @@ public class CandidateEditorInput implements IEditorInput {
 		return null;
 	}
 
+	public Refreshable getParent() {
+		return parent;
+	}
 }

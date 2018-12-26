@@ -26,7 +26,7 @@ public class CandidateModel extends AbstractDBModel<CandidateEntry> {
 			p.id = rs.getLong("id");
 			p.created = rs.getObject("created", LocalDateTime.class);
 			p.birthDay = rs.getObject("birthday", LocalDate.class); 
-			p.status = Status.valueOf(rs.getInt("status"));
+			p.status = Status.values()[rs.getInt("status")];
 			p.name = new Name(rs.getString("vorname"), rs.getString("nachname"));
 			p.tel1 = rs.getString("tel1");
 			p.tel2 = rs.getString("tel2");
@@ -104,6 +104,8 @@ public class CandidateModel extends AbstractDBModel<CandidateEntry> {
 			UIError.showError("DB Fehler", e);
 		}
 	};
+
+	private PreparedStatement updateStatus;
 	
 	CandidateModel() {
 		super(row2entry, entry2row);
@@ -157,6 +159,8 @@ public class CandidateModel extends AbstractDBModel<CandidateEntry> {
 				.prepareStatement("update person set "+dbFields+" where id = ?");
 		
 		model.delete = CandidateModel.connection.prepareStatement("delete from person where id =?");
+		model.updateStatus = CandidateModel.connection.prepareStatement("update person set status=? where id = ?");
+		
 		return model;
 	}
 	
@@ -164,5 +168,11 @@ public class CandidateModel extends AbstractDBModel<CandidateEntry> {
 	public void add(CandidateEntry e) throws SQLException {
 		e.owner = System.getProperty("user.name");
 		super.add(e);
+	}
+	
+	public void updateStatus(CandidateEntry e) throws SQLException { 
+		updateStatus.setInt(1, e.getStatus().ordinal());
+		updateStatus.setLong(2, e.getId());
+		updateStatus.executeUpdate();
 	}
 }

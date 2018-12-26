@@ -31,6 +31,13 @@
       </view>
       <view
             allowMultiple="false"
+            class="com.hogo.portal.statistics.StatisticsView"
+            icon="icons/info_tsk.png"
+            id="com.hogo.portal.statistics.StatisticsView"
+            name="Statistiken">
+      </view>
+      <view
+            allowMultiple="false"
             class="com.hogo.portal.views.log.LogView"
             icon="icons/log.png"
             id="com.hogo.portal.views.log.LogView"

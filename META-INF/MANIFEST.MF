@@ -5,18 +5,12 @@ Bundle-SymbolicName: com.hogo.portal;singleton:=true
 Bundle-Version: 1.0.0
 Bundle-Activator: com.hogo.portal.Activator
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Require-Bundle: org.eclipse.ui,
- org.eclipse.core.runtime,
- org.eclipse.equinox.ds,
- org.eclipse.equinox.util,
- org.eclipse.equinox.event,
- org.eclipse.ui.forms;bundle-version="3.7.300",
- org.eclipse.swt,
- org.eclipse.jface,
- org.eclipse.ui.workbench
 Automatic-Module-Name: Personal-Portal
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .,
  lib/postgresql-42.2.5.jar,
  swing2swt.jar
-Import-Package: org.eclipse.ui.forms.widgets
+Require-Bundle: org.eclipse.core.runtime,
+ org.eclipse.jface,
+ org.eclipse.ui.workbench,
+ org.eclipse.ui.forms

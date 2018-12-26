@@ -2,7 +2,7 @@ package com.hogo.portal.candidates;
 
 public enum LanguageKnowledge {
 
-	None(0, "Keine"), Basic(1, "Baustelle"), Average(2, "Ok"), Good(3, "Gut"), NativeSpeaker(4, "Muttersprache");
+	None(0, "Keine"), Basic(1, "Baustelle"), Average(2, "Grundkentnisse"), Good(3, "Gut"), NativeSpeaker(4, "Muttersprache");
 
 	final short value;
 	final String text;
@@ -16,7 +16,7 @@ public enum LanguageKnowledge {
 		switch(arg) { 
 		case	"Keine":	return None;
 		case	"Baustelle":return Basic;
-		case 	"Ok":		return Average;
+		case 	"Grundkentnisse":		return Average;
 		case	"Gut":		return Good;
 		case	"Muttersprache": return NativeSpeaker;
 		}

@@ -19,6 +19,7 @@ import org.eclipse.ui.application.IActionBarConfigurer;
 import com.hogo.portal.candidates.CandidateView;
 import com.hogo.portal.settings.SettingsView;
 import com.hogo.portal.skills.SkillsView;
+import com.hogo.portal.statistics.StatisticsView;
 import com.hogo.portal.views.log.LogView;
 
 /**
@@ -35,8 +36,9 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 	private IWorkbenchAction aboutAction;
 	private IWorkbenchAction saveEditAction;
 	private IWorkbenchAction saveEditAllAction;
-	private OpenView openCandidateView;
 	private OpenView openLogView;
+	private OpenView openCandidateView;
+	private OpenView openStatisticView;
 	private OpenView openSettingsView;
 	private OpenView openSkillsView;
 	private OpenCandidateEditor newCandidateAction;
@@ -47,11 +49,6 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 
 	@Override
 	protected void makeActions(final IWorkbenchWindow window) {
-		// Creates the actions and registers them.
-		// Registering is needed to ensure that key bindings work.
-		// The corresponding commands keybindings are defined in the plugin.xml file.
-		// Registering also provides automatic disposal of the actions when
-		// the window is closed.
 
 		exitAction = ActionFactory.QUIT.create(window);
 		register(exitAction);
@@ -64,6 +61,8 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 
 		openCandidateView = new OpenView("Kandidaten", CandidateView.ID, Activator.getImageDescriptor("icons/candidates.png"), "Candidates.open");
 		register(openCandidateView);
+		openStatisticView= new OpenView("Statistiken", StatisticsView.ID, Activator.getImageDescriptor("icons/info_tsk.png"), "Candidates.open");
+		register(openStatisticView);
 		openLogView = new OpenView("Log", LogView.ID, Activator.getImageDescriptor("icons/log.png"), "Log.open");
 		register(openLogView);
 		openSettingsView = new OpenView("Einstellungen", SettingsView.ID, Activator.getImageDescriptor("icons/settings.png"), "Settings.open");
@@ -95,6 +94,7 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 		fileMenu.add(openSkillsView);
 		fileMenu.add(openLogView);
 		fileMenu.add(openSettingsView);
+		fileMenu.add(openStatisticView);
 		fileMenu.add(new Separator());
 		fileMenu.add(saveEditAction);
 		fileMenu.add(saveEditAllAction);
