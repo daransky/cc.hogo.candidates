@@ -248,7 +248,7 @@ public class Countries {
 	};
 	
 	static String[] countryNames;
-	static final Country OWN = COUNTRIES[13];
+	static final Country OWN = COUNTRIES[0];
 	
 	public static Country[] getCountries() {
 		return COUNTRIES;

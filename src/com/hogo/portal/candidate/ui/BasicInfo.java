@@ -202,6 +202,14 @@ public class BasicInfo extends Composite {
 		return btnMaenlich;
 	}
 
+	public Button getBtnWeiblich() {
+		return btnWeiblich;
+	}
+
+	public void setBtnWeiblich(Button btnWeiblich) {
+		this.btnWeiblich = btnWeiblich;
+	}
+
 	public Combo getCmbDeutsch() {
 		return cmbDeutsch;
 	}

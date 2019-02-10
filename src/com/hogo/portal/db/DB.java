@@ -28,7 +28,7 @@ public class DB {
 	public static void open() throws Exception {
 		if (connection == null) {
 			String host = "localhost";
-			host = "10.0.0.2";
+//			host = "10.0.0.15";
 			connection = test("jdbc:postgresql://"+host+"/portal", "postgres", "Passw0rd");
 			AbstractDBModel.connection = connection;
 		}

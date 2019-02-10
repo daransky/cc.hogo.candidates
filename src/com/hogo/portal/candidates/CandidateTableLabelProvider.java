@@ -16,6 +16,7 @@ import org.eclipse.swt.graphics.Image;
 import com.hogo.portal.AbstractTableLabelProvider;
 import com.hogo.portal.Activator;
 import com.hogo.portal.candidate.ui.PhoneLabelProvider;
+import com.hogo.portal.candidates.Categories.Category;
 
 public class CandidateTableLabelProvider extends AbstractTableLabelProvider implements ITableColorProvider {
 
@@ -27,6 +28,13 @@ public class CandidateTableLabelProvider extends AbstractTableLabelProvider impl
 
 	@Override
 	public String getColumnText(Object element, int columnIndex) {
+		if (element instanceof Category) {
+			if( columnIndex > 0)
+				return "";
+			
+			return ((Category) element).getName();
+		}
+
 		CandidateEntry e = (CandidateEntry) element;
 
 		switch (columnIndex) {
@@ -42,8 +50,10 @@ public class CandidateTableLabelProvider extends AbstractTableLabelProvider impl
 		case 4:
 			return e.getEinsetzbar();
 		case 5:
-			return e.getGelernt();
+			return e.getAdresse();
 		case 6:
+			return e.getGelernt();
+		case 7:
 			return e.getKommentar();
 		default:
 			return null;
@@ -52,6 +62,10 @@ public class CandidateTableLabelProvider extends AbstractTableLabelProvider impl
 
 	@Override
 	public Image getColumnImage(Object element, int columnIndex) {
+		if (element instanceof Category) {
+			return null;
+		}
+		
 		CandidateEntry e = (CandidateEntry) element;
 		if (columnIndex == 0) {
 			if (!e.blacklist && e.mobil) {
@@ -79,6 +93,9 @@ public class CandidateTableLabelProvider extends AbstractTableLabelProvider impl
 
 	@Override
 	public Color getBackground(Object element, int columnIndex) {
+		if (element instanceof Category) {
+			return null;
+		}
 		CandidateEntry e = (CandidateEntry) element;
 		return e.getStatus().getColor(); 
 	}
@@ -97,15 +114,15 @@ public class CandidateTableLabelProvider extends AbstractTableLabelProvider impl
 	}
 
 	public static TreeViewerColumn[] createColumns(TreeViewer viewer) {
-		TreeViewerColumn col[] = new TreeViewerColumn[7];
+		TreeViewerColumn col[] = new TreeViewerColumn[8];
 
 		col[0] = new TreeViewerColumn(viewer, SWT.NONE);
 		col[0].getColumn().setText("Name");
-		col[0].getColumn().setWidth(300);
+		col[0].getColumn().setWidth(280);
 
 		col[1] = new TreeViewerColumn(viewer, SWT.NONE);
 		col[1].getColumn().setText("Tel");
-		col[1].getColumn().setWidth(300);
+		col[1].getColumn().setWidth(180);
 
 		col[2] = new TreeViewerColumn(viewer, SWT.NONE);
 		col[2].getColumn().setText("Deutsch");
@@ -113,19 +130,23 @@ public class CandidateTableLabelProvider extends AbstractTableLabelProvider impl
 
 		col[3] = new TreeViewerColumn(viewer, SWT.NONE);
 		col[3].getColumn().setText("Verfügbar");
-		col[3].getColumn().setWidth(150);
+		col[3].getColumn().setWidth(100);
 
 		col[4] = new TreeViewerColumn(viewer, SWT.NONE);
 		col[4].getColumn().setText("Einsetzbar");
 		col[4].getColumn().setWidth(200);
-
+				
 		col[5] = new TreeViewerColumn(viewer, SWT.NONE);
-		col[5].getColumn().setText("Gelernt");
+		col[5].getColumn().setText("Adresse");
 		col[5].getColumn().setWidth(200);
-
+		
 		col[6] = new TreeViewerColumn(viewer, SWT.NONE);
-		col[6].getColumn().setText("Kommentar");
-		col[6].getColumn().setWidth(300);
+		col[6].getColumn().setText("Gelernt");
+		col[6].getColumn().setWidth(200);
+
+		col[7] = new TreeViewerColumn(viewer, SWT.NONE);
+		col[7].getColumn().setText("Kommentar");
+		col[7].getColumn().setWidth(300);
 
 		return col;
 	}

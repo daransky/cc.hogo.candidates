@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 
 public class CandidateEntry {
 	
-	class	Address { 
+	static class	Address { 
 		String 			strasse;
 		String			stadt;
 		String			plz;
@@ -46,7 +46,26 @@ public class CandidateEntry {
 			this.land = land;
 		}
 		
-		
+		@Override
+		public String toString() {
+			StringBuilder sb = new StringBuilder();
+			if( strasse != null ) {
+				sb.append(strasse);
+			}
+			
+			if( stadt != null ) {
+				if( strasse != null ) sb.append('/');
+				sb.append(stadt);
+				if( plz != null )
+					sb.append('-').append(plz);
+			}
+			
+			if( land != null ) {
+				if( strasse != null || stadt != null ) sb.append(',');
+				sb.append(land);
+			}
+			return sb.toString();
+		}
 	}
 	
 	long			id;
@@ -285,9 +304,16 @@ public class CandidateEntry {
 	public boolean isSexMale() {
 		return sexMale;
 	}
+	public boolean isSexFemale() {
+		return !sexMale;
+	}
 
 	public void setSexMale(boolean sexMale) {
 		this.sexMale = sexMale;
+	}
+	
+	public void setSexFemale(boolean sexMale) {
+		this.sexMale = !sexMale;
 	}
 
 	public boolean isBlacklist() {
@@ -304,6 +330,10 @@ public class CandidateEntry {
 
 	public void setBirthDay(LocalDate birthDay) {
 		this.birthDay = birthDay;
+	}
+
+	public String getAdresse() {
+		return new Address(strasse, stadt, plz, land).toString();
 	}
 	
 	

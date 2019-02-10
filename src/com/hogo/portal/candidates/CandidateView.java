@@ -1,9 +1,14 @@
 package com.hogo.portal.candidates;
 
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.Collection;
 
 import org.daro.common.ui.UIError;
+import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IContributionItem;
+import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.TreeViewer;
@@ -22,11 +27,18 @@ import com.hogo.portal.Activator;
 import com.hogo.portal.OpenCandidateEditor;
 import com.hogo.portal.candidate.ui.AbstractView;
 import com.hogo.portal.candidate.ui.Refreshable;
+import com.hogo.portal.candidates.Categories.Category;
 
 public class CandidateView extends AbstractView implements Refreshable {
 	public static final String ID = "com.hogo.portal.candidates.CandidateView";
 	private CandidateModel model;
 	private PersonContentProvider content;
+
+	private enum CategoryType {
+		NONE, DATE
+	}
+
+	private CategoryType categoryType = CategoryType.DATE;
 
 	@Override
 	protected TreeViewerColumn[] createColumns(TreeViewer viewer) {
@@ -74,7 +86,7 @@ public class CandidateView extends AbstractView implements Refreshable {
 						public void widgetSelected(SelectionEvent e) {
 							final CandidateEntry candidate = (CandidateEntry) getItemSelected().getData();
 							final MenuItem mi = (MenuItem) e.getSource();
-							
+
 							candidate.setStatus((Status) mi.getData());
 							try {
 								model.updateStatus(candidate);
@@ -106,6 +118,7 @@ public class CandidateView extends AbstractView implements Refreshable {
 		getViewer().setLabelProvider(new CandidateTableLabelProvider());
 
 		createContextMenu();
+		createCategoryMenu();
 
 		try {
 			model = CandidateModel.open();
@@ -115,13 +128,69 @@ public class CandidateView extends AbstractView implements Refreshable {
 		}
 	}
 
+	class CategoryAction extends Action {
+
+	}
+
+	void createCategoryMenu() {
+		IMenuManager menu = getViewSite().getActionBars().getMenuManager();
+		IContributionItem[] items = menu.getItems();
+		menu.removeAll();
+
+		MenuManager m1 = new MenuManager("Spalten");
+		for (IContributionItem item : items)
+			m1.add(item);
+
+		menu.add(m1);
+
+		Runnable none = () -> {
+			categoryType = CategoryType.NONE;
+			refreshAction();
+		};
+
+		Runnable date = () -> {
+			categoryType = CategoryType.DATE;
+			refreshAction();
+		};
+
+		MenuManager m2 = new MenuManager("Grupieren");
+
+		m2.add(new CategoryMenuAction("Keine", none, true));
+		m2.add(new CategoryMenuAction("Datum", date));
+		menu.add(m2);
+
+		menu.update();
+	}
+
 	@Override
 	protected void refreshAction() {
 		getSite().getShell().getDisplay().asyncExec(() -> {
 			getViewer().getTree().removeAll();
 			try {
-				Collection<CandidateEntry> result = model.select();
-				getViewer().setInput(result);
+				Collection<CandidateEntry> result;
+				switch (categoryType) {
+				case NONE:
+					result = model.select();
+					getViewer().setInput(result);
+					break;
+				case DATE:
+					Categories categories = new Categories();
+					result = model.selectLastWeek();
+					categories.add(new Category(String.format("Letzte Woche (%d)", result.size()), result));
+					
+					result = model.selectLastMonth();
+					categories.add(new Category(String.format("Letzter Monat (%d)", result.size()), result));
+					
+					result = model.selectOlderThan(LocalDateTime.now().minusMonths(1));
+					categories.add(new Category(String.format("Ältere (%d)", result.size()), result));
+
+					getViewer().setInput(categories);
+
+					TreeItem item = getViewer().getTree().getItem(0);
+					getViewer().expandToLevel(item.getData(),TreeViewer.ALL_LEVELS, true);
+					break;
+					
+				}
 			} catch (SQLException e) {
 				UIError.showError("DB Fehler", e);
 			}

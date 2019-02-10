@@ -16,6 +16,7 @@ import org.eclipse.ui.actions.ActionFactory.IWorkbenchAction;
 import org.eclipse.ui.application.ActionBarAdvisor;
 import org.eclipse.ui.application.IActionBarConfigurer;
 
+import com.hogo.portal.candidate.ui.CustomAction;
 import com.hogo.portal.candidates.CandidateView;
 import com.hogo.portal.settings.SettingsView;
 import com.hogo.portal.skills.SkillsView;
@@ -42,6 +43,7 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 	private OpenView openSettingsView;
 	private OpenView openSkillsView;
 	private OpenCandidateEditor newCandidateAction;
+	private CustomAction export;
 
 	public ApplicationActionBarAdvisor(IActionBarConfigurer configurer) {
 		super(configurer);
@@ -76,6 +78,8 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 		saveEditAllAction = ActionFactory.SAVE_ALL.create(window);
 		register(saveEditAllAction);
 
+		export = new ClipboardExportAction();
+		register(export);
 	}
 
 	@Override
@@ -113,5 +117,6 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 		toolbar.add(openCandidateView);
 		toolbar.add(saveEditAction);
 		toolbar.add(saveEditAllAction);
+		toolbar.add(export);
 	}
 }

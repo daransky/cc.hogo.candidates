@@ -6,6 +6,8 @@ import java.util.Iterator;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 
+import com.hogo.portal.candidates.Categories.Category;
+
 public class PersonContentProvider implements ITreeContentProvider, Collection<CandidateEntry> {
 
 	Collection<CandidateEntry> all; 
@@ -74,6 +76,10 @@ public class PersonContentProvider implements ITreeContentProvider, Collection<C
 			CandidateEntry entry = (CandidateEntry)inputElement;
 			return entry.toArray();
 		}
+		if (inputElement instanceof Categories) {
+			return ((Categories)inputElement).categories.toArray();
+		}
+		
 		return new Object[0];
 	}
 
@@ -82,7 +88,13 @@ public class PersonContentProvider implements ITreeContentProvider, Collection<C
 		if (parentElement instanceof Collection<?>) {
 			return ((Collection<?>)parentElement).toArray();
 		}
-		if (parentElement instanceof CandidateEntry) {
+		if (parentElement instanceof Categories) {
+			Categories categories = (Categories)parentElement;
+			return categories.categories.toArray();
+		}
+		if( parentElement instanceof Category) { 
+			Category category = (Category)parentElement;
+			return category.children.toArray();
 		}
 		return new Object[0];
 	}
@@ -101,6 +113,14 @@ public class PersonContentProvider implements ITreeContentProvider, Collection<C
 		if (inputElement instanceof Collection<?>) {
 			return !((Collection<?>)inputElement).isEmpty();
 		}
+		
+		if (inputElement instanceof Categories) {
+			return ((Categories)inputElement).hasChildren();
+		}
+		if (inputElement instanceof Category) {
+			return ((Category)inputElement).hasChildren();
+		}
+		
 		return false;
 	}
 

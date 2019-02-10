@@ -27,6 +27,7 @@ import com.hogo.portal.candidate.ui.Comment;
 import com.hogo.portal.candidate.ui.Knowledge;
 import com.hogo.portal.core.Binder;
 
+
 public class CandidateEditor extends EditorPart {
 
 	public static final String ID = "com.hogo.portal.candidates.CandidateEditor"; //$NON-NLS-1$
@@ -59,6 +60,8 @@ public class CandidateEditor extends EditorPart {
 		binder.bind(basicInfo.getChkBlacklist(), CandidateEntry::isBlacklist, CandidateEntry::setBlacklist);
 		binder.bind(basicInfo.getDatBirth(), CandidateEntry::getBirthDay, CandidateEntry::setBirthDay);
 		binder.bind(basicInfo.getDatVerfuegbar(), CandidateEntry::getVerfuegbar, CandidateEntry::setVerfuegbar);
+		binder.bind(basicInfo.getBtnMaenlich(), CandidateEntry::isSexMale, CandidateEntry::setSexMale);
+		binder.bind(basicInfo.getBtnWeiblich(), CandidateEntry::isSexFemale, CandidateEntry::setSexFemale);
 		
 		basicInfo.getCmbDeutsch().select(binder.getBean().deutsch.ordinal());
 		basicInfo.getCmbDeutsch().addSelectionListener(new SelectionListener() {
@@ -229,6 +232,10 @@ public class CandidateEditor extends EditorPart {
 
 		binder.setBean(bean);
 		setSite(site);
+	}
+	
+	public CandidateEntry	getEntry() {
+		return binder.getBean();
 	}
 
 	@Override

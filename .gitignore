@@ -1,0 +1,11 @@
+.vscode/
+.git_automic
+*.out
+lib/*.jar
+.recommenders/
+RemoteSystemsTempFiles/
+*.class
+.classpath
+.project
+target/
+bin/

@@ -1,20 +1,24 @@
 package com.hogo.portal.candidates;
 
 import java.sql.Array;
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.daro.common.ui.UIError;
+import org.eclipse.swt.widgets.Display;
 
 import com.hogo.portal.db.AbstractDBModel;
 
@@ -104,7 +108,7 @@ public class CandidateModel extends AbstractDBModel<CandidateEntry> {
 			UIError.showError("DB Fehler", e);
 		}
 	};
-
+	private PreparedStatement selectLastWeek, selectLastMonth, selectTimePeriod;
 	private PreparedStatement updateStatus;
 	
 	CandidateModel() {
@@ -142,24 +146,34 @@ public class CandidateModel extends AbstractDBModel<CandidateEntry> {
 	    "birthday"
 		);
 		final String collected = fields.stream().collect(Collectors.joining(","));
-		model.select = CandidateModel.connection
-				.prepareStatement("Select " + collected + " from person order by created desc");
+
+		Connection cnn = CandidateModel.connection;
 		
+		model.select = cnn
+				.prepareStatement("Select " + collected + " from person order by created desc");
+		model.selectLastWeek = cnn
+				.prepareStatement("Select " + collected + " from person where created > (NOW() - interval '7 day') order by created desc");
+		model.selectLastMonth = cnn
+				.prepareStatement("Select " + collected + " from person where created < (NOW() - interval '7 day') and created > (NOW() - interval '1 month') order by created desc");
+		model.selectTimePeriod = cnn
+				.prepareStatement("Select " + collected + " from person where created < ?");
+						
 		final Collection<String> nonDbDft = fields.subList(2, fields.size());
 		String dbFields = nonDbDft.stream().collect(Collectors.joining(", "));
 		String dbValues = nonDbDft.stream().map( e-> "?").collect(Collectors.joining(","));
-		model.insert = CandidateModel.connection
+		model.insert = cnn
 				.prepareStatement("insert into person ("+dbFields+") values("+dbValues+")");
 		
 		dbFields = nonDbDft.stream().map( e -> e + "=?").collect(Collectors.joining(", "));
-		model.updateRead = CandidateModel.connection
+		model.updateRead = cnn
 				.prepareStatement("Select " + collected + " from person where id = ?");
 
-		model.update = CandidateModel.connection
+		model.update = cnn
 				.prepareStatement("update person set "+dbFields+" where id = ?");
 		
-		model.delete = CandidateModel.connection.prepareStatement("delete from person where id =?");
-		model.updateStatus = CandidateModel.connection.prepareStatement("update person set status=? where id = ?");
+		model.delete = cnn.prepareStatement("delete from person where id =?");
+		model.updateStatus = cnn.prepareStatement("update person set status=? where id = ?");
+		
 		
 		return model;
 	}
@@ -174,5 +188,38 @@ public class CandidateModel extends AbstractDBModel<CandidateEntry> {
 		updateStatus.setInt(1, e.getStatus().ordinal());
 		updateStatus.setLong(2, e.getId());
 		updateStatus.executeUpdate();
+	}
+	
+	public Collection<CandidateEntry> selectLastWeek() throws SQLException {
+		Collection<CandidateEntry> result = new LinkedList<>();
+		try(DBIterator<CandidateEntry> it = new DBIterator<>(selectLastWeek.executeQuery(), row2e)) {
+				it.forEachRemaining(e -> result.add(e));
+		} catch( Exception err) { 
+			UIError.showError(Display.getCurrent().getActiveShell(), "DB Fehler", err.getMessage(), err);
+		}
+		return result;
+	}
+
+	public Collection<CandidateEntry> selectLastMonth()  {
+		Collection<CandidateEntry> result = new LinkedList<>();
+		try(DBIterator<CandidateEntry> it = new DBIterator<>(selectLastMonth.executeQuery(), row2e)) {
+				it.forEachRemaining(e -> result.add(e));
+		} catch( Exception err) { 
+			UIError.showError(Display.getCurrent().getActiveShell(), "DB Fehler", err.getMessage(), err);
+		}
+		return result;
+	}
+
+	public Collection<CandidateEntry> selectOlderThan(LocalDateTime start) throws SQLException {
+		Collection<CandidateEntry> result = new LinkedList<>();
+		
+		selectTimePeriod.setTimestamp(1, Timestamp.valueOf(start));
+		
+		try(DBIterator<CandidateEntry> it = new DBIterator<>(selectTimePeriod.executeQuery(), row2e)) {
+				it.forEachRemaining(e -> result.add(e));
+		} catch( Exception err) { 
+			UIError.showError(Display.getCurrent().getActiveShell(), "DB Fehler", err.getMessage(), err);
+		}
+		return result;
 	}
 }
